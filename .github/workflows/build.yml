@@ -1,0 +1,30 @@
+name: build
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  windows-exe:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Run tests
+        run: python -m unittest test_zedit -v
+
+      - name: Install PyInstaller
+        run: pip install pyinstaller
+
+      - name: Build exe
+        run: pyinstaller --onefile --windowed zedit.py
+
+      - name: Upload exe
+        uses: actions/upload-artifact@v4
+        with:
+          name: zedit-windows
+          path: dist/zedit.exe
