@@ -25,9 +25,13 @@ validate is rejected on load rather than opened.
 
 ## Getting the exe
 
-Every push builds `zedit.exe` on a Windows runner via GitHub Actions
-(`.github/workflows/build.yml`); download it from the workflow run's
-`zedit-windows` artifact.
+Grab `zedit.exe` from the latest entry on the
+[Releases page](https://github.com/jackallalone-dev/zedit/releases) — it is a
+standalone download, nothing to install.
+
+Every push also builds it on a Windows runner via GitHub Actions
+(`.github/workflows/build.yml`) and uploads it as the `zedit-windows`
+artifact; pushing a `v*` tag publishes a release with the exe attached.
 
 To build it yourself, on Windows (or with Windows Python inside a Wine
 container):
