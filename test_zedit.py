@@ -224,6 +224,36 @@ class OpenSaveTests(unittest.TestCase):
         return tmp.name
 
 
+class DefaultSaveDirTests(unittest.TestCase):
+    def test_found_for_current_profile(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            save_dir = os.path.join(
+                tmpdir, "AppData", "LocalLow", "CONFAK", "Zenonia"
+            )
+            os.makedirs(save_dir)
+            old = os.environ.get("USERPROFILE")
+            os.environ["USERPROFILE"] = tmpdir
+            try:
+                self.assertEqual(zedit.default_save_dir(), save_dir)
+            finally:
+                if old is None:
+                    del os.environ["USERPROFILE"]
+                else:
+                    os.environ["USERPROFILE"] = old
+
+    def test_none_when_game_dir_missing(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            old = os.environ.get("USERPROFILE")
+            os.environ["USERPROFILE"] = tmpdir
+            try:
+                self.assertIsNone(zedit.default_save_dir())
+            finally:
+                if old is None:
+                    del os.environ["USERPROFILE"]
+                else:
+                    os.environ["USERPROFILE"] = old
+
+
 class BackupTests(unittest.TestCase):
     def test_backup_written_once_never_overwritten(self):
         original = build_item_data(gold=100)

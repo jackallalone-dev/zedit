@@ -281,6 +281,17 @@ class AchievementData:
         return sum(1 for i in range(ACHIEVEMENT_COUNT) if self.is_unlocked(i))
 
 
+def default_save_dir():
+    """The game's save directory for the current user
+    (<profile>\\AppData\\LocalLow\\CONFAK\\Zenonia), or None if it does not
+    exist — e.g. when the game has never run under this profile."""
+    profile = os.environ.get("USERPROFILE") or os.path.expanduser("~")
+    candidate = os.path.join(profile, "AppData", "LocalLow", "CONFAK", "Zenonia")
+    if os.path.isdir(candidate):
+        return candidate
+    return None
+
+
 def open_save(path):
     """Load and classify a save. Returns ('SVID', ItemData) or
     ('SVAG', AchievementData). Raises SaveFormatError for anything else,
@@ -323,6 +334,7 @@ def run_gui():
             self.path = None
             self.kind = None
             self.editor = None
+            self.browse_dir = default_save_dir()
             self.gold_var = tk.StringVar()
             self.count_var = tk.StringVar()
             self.cells = []
@@ -346,10 +358,12 @@ def run_gui():
         def browse(self):
             path = filedialog.askopenfilename(
                 title="Open ZENONIA save",
+                initialdir=self.browse_dir or os.path.expanduser("~"),
                 filetypes=[("ZENONIA saves", "*.bin"), ("All files", "*.*")],
             )
             if not path:
                 return
+            self.browse_dir = os.path.dirname(path)
             try:
                 kind, editor = open_save(path)
             except SaveFormatError as exc:
